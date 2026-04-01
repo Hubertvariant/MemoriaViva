@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Letreiro Mario Bros Premium</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Fonte Pixelada estilo Retro Game -->
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@900&display=swap');
-
         body {
             margin: 0;
             padding: 0;
@@ -22,48 +19,44 @@
             font-family: 'Press Start 2P', cursive;
         }
 
-        /* Container com efeito de vidro e profundidade */
         .glass-container {
             width: 100%;
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-top: 4px solid rgba(255, 255, 255, 0.2);
             border-bottom: 4px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             padding: 60px 0;
             position: relative;
+            overflow: hidden; /* Garante que o texto não saia do container */
         }
 
-        /* Animação suave */
         @keyframes scroll {
             0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            100% { transform: translateX(-50%); } /* Move exatamente metade do conteúdo total */
         }
 
         .marquee-content {
             display: flex;
-            white-space: nowrap;
+            width: max-content; /* Importante para o cálculo do transform */
             animation: scroll var(--speed, 15s) linear infinite;
         }
 
-        /* Efeito de brilho neon no texto pixelado */
         .pixel-text {
             font-size: 2.2rem;
             padding: 0 40px;
             display: flex;
             align-items: center;
+            white-space: nowrap;
             text-transform: uppercase;
-            letter-spacing: 2px;
             filter: drop-shadow(0 0 8px rgba(0,0,0,0.8));
         }
 
-        /* Cores Premium do Mario com Glow */
         .mario-red { color: #FF0000; text-shadow: 0 0 15px rgba(255, 0, 0, 0.6); }
         .mario-yellow { color: #FFD700; text-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
         .mario-green { color: #43f11d; text-shadow: 0 0 15px rgba(67, 241, 29, 0.6); }
         .mario-white { color: #FFFFFF; text-shadow: 0 0 15px rgba(255, 255, 255, 0.5); }
 
-        /* Decoração de fundo (opcional, para dar clima de jogo) */
         .bg-decor {
             position: absolute;
             bottom: 20px;
@@ -75,19 +68,17 @@
 </head>
 <body>
 
-    <div class="glass-container marquee-mask">
+    <div class="glass-container">
         <div id="marquee" class="marquee-content">
-            <!-- Gerado via JS -->
-        </div>
+            </div>
     </div>
 
     <div class="bg-decor">ROBSON 10/10 • HIGH SCORE: 999999</div>
 
     <script>
-        // CONFIGURAÇÕES (Velocidade e Frase)
         const CONFIG = {
             texto: "IT'S-A ME, ROBSON! • MELHOR PROFESSOR DO MUNDO!! • OBRIGADO POR TUDO! •",
-            velocidade: "5s", // Ajuste aqui: '10s' é rápido, '30s' é lento
+            velocidade: "20s", // Ajustado para ser mais suave
             icones: ["🍄", "⭐", "💰", "🦖"]
         };
 
@@ -95,24 +86,24 @@
 
         function initMarquee() {
             marquee.style.setProperty('--speed', CONFIG.velocidade);
-            marquee.innerHTML = '';
             
-            // Criando 10 instâncias para garantir o loop sem cortes
-            for (let i = 0; i < 10; i++) {
-                const wrapper = document.createElement('div');
-                wrapper.className = 'flex items-center';
-                
-                const colors = ['mario-white', 'mario-yellow', 'mario-red', 'mario-green'];
+            // Criamos o bloco de texto original
+            let content = "";
+            const colors = ['mario-white', 'mario-yellow', 'mario-red', 'mario-green'];
+
+            for (let i = 0; i < 8; i++) {
                 const colorClass = colors[i % colors.length];
                 const icon = CONFIG.icones[i % CONFIG.icones.length];
-
-                wrapper.innerHTML = `
+                content += `
                     <span class="pixel-text ${colorClass}">
                         <span class="mr-6 scale-125">${icon}</span> ${CONFIG.texto}
                     </span>
                 `;
-                marquee.appendChild(wrapper);
             }
+
+            // Para o loop infinito perfeito, duplicamos o conteúdo inteiro.
+            // O CSS move -50%, então quando a segunda metade chega no início, o ciclo reinicia.
+            marquee.innerHTML = content + content;
         }
 
         window.onload = initMarquee;
