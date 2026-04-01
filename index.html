@@ -28,17 +28,21 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             padding: 60px 0;
             position: relative;
-            overflow: hidden; /* Garante que o texto não saia do container */
+            overflow: hidden; /* Corta o que sair da largura da tela */
         }
 
+        /* ANIMAÇÃO INFINITA */
         @keyframes scroll {
             0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); } /* Move exatamente metade do conteúdo total */
+            100% { transform: translateX(-50%); } 
+            /* Movemos 50% porque o conteúdo está duplicado. 
+               Quando chega no meio, ele reseta visualmente para o zero. */
         }
 
         .marquee-content {
             display: flex;
-            width: max-content; /* Importante para o cálculo do transform */
+            white-space: nowrap;
+            width: max-content; /* Garante que o container tenha o tamanho real do texto */
             animation: scroll var(--speed, 15s) linear infinite;
         }
 
@@ -47,7 +51,6 @@
             padding: 0 40px;
             display: flex;
             align-items: center;
-            white-space: nowrap;
             text-transform: uppercase;
             filter: drop-shadow(0 0 8px rgba(0,0,0,0.8));
         }
@@ -78,7 +81,7 @@
     <script>
         const CONFIG = {
             texto: "IT'S-A ME, ROBSON! • MELHOR PROFESSOR DO MUNDO!! • OBRIGADO POR TUDO! •",
-            velocidade: "20s", // Ajustado para ser mais suave
+            velocidade: "20s", // Aumentei o tempo para ficar mais suave
             icones: ["🍄", "⭐", "💰", "🦖"]
         };
 
@@ -87,23 +90,26 @@
         function initMarquee() {
             marquee.style.setProperty('--speed', CONFIG.velocidade);
             
-            // Criamos o bloco de texto original
-            let content = "";
+            // Criamos uma sequência de itens
+            let segmentHTML = "";
             const colors = ['mario-white', 'mario-yellow', 'mario-red', 'mario-green'];
-
-            for (let i = 0; i < 8; i++) {
+            
+            // Criamos 6 blocos para garantir que preencha a tela
+            for (let i = 0; i < 6; i++) {
                 const colorClass = colors[i % colors.length];
                 const icon = CONFIG.icones[i % CONFIG.icones.length];
-                content += `
-                    <span class="pixel-text ${colorClass}">
-                        <span class="mr-6 scale-125">${icon}</span> ${CONFIG.texto}
-                    </span>
+                segmentHTML += `
+                    <div class="flex items-center">
+                        <span class="pixel-text ${colorClass}">
+                            <span class="mr-6 scale-125">${icon}</span> ${CONFIG.texto}
+                        </span>
+                    </div>
                 `;
             }
 
-            // Para o loop infinito perfeito, duplicamos o conteúdo inteiro.
-            // O CSS move -50%, então quando a segunda metade chega no início, o ciclo reinicia.
-            marquee.innerHTML = content + content;
+            // O TRUQUE: Duplicamos o conteúdo total (segmentHTML + segmentHTML)
+            // Assim, quando a animação chega em -50%, a segunda metade é IDÊNTICA à primeira
+            marquee.innerHTML = segmentHTML + segmentHTML;
         }
 
         window.onload = initMarquee;
